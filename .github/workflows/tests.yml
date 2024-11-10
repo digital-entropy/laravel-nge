@@ -54,7 +54,7 @@ jobs:
         run: |
           composer config minimum-stability dev
           composer config repositories.nge path ../nge
-          composer require laravel/nge:* --dev -W
+          composer require dentro/nge:* --dev -W
         working-directory: app
 
       - name: Install Nge into App
@@ -64,7 +64,7 @@ jobs:
         working-directory: app
 
       - name: Remove Nge
-        run: composer remove laravel/nge --dev --no-interaction -W
+        run: composer remove dentro/nge --dev --no-interaction -W
         working-directory: app
 
       - name: Start Nge Container
