@@ -34,7 +34,11 @@ class InstallCommand extends Command
      */
     public function handle()
     {
-        $services = $this->gatherServicesInteractively();
+        if ($this->option('no-interaction')) {
+            $services = $this->defaultServices;
+        } else {
+            $services = $this->gatherServicesInteractively();
+        }
 
         if ($invalidServices = array_diff($services, $this->services)) {
             $this->components->error('Invalid services ['.implode(',', $invalidServices).'].');

@@ -60,7 +60,6 @@ jobs:
       - name: Install Nge into App
         run: |
           php artisan nge:install --php=${{ matrix.php }} --no-interaction
-          php artisan nge:publish --no-interaction
         working-directory: app
 
       - name: Remove Nge

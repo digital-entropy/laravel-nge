@@ -6,11 +6,12 @@ services:
             dockerfile: Dockerfile
             args:
                 - PHP_VERSION=${PHP_VERSION:-8.3}
-                - USER_CONTAINER=${NGE_USER}
+                - USER_CONTAINER=${NGE_USER:-enji}
                 - PUID=${NGE_PUID:-1000}
                 - PGID=${NGE_PGID:-1000}
         image: app:{{PHP_VERSION}}
-        user: ${NGE_USER}
+        user: ${NGE_USER:-enji}
+        restart: unless-stopped
         ports:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
