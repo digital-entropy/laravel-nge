@@ -1,0 +1,84 @@
+name: Docker Compose Test
+
+on:
+  push:
+    branches:
+      - main
+      - '*.x'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - php: '8.0'
+            laravel: 9
+          - php: '8.1'
+            laravel: 10
+          - php: '8.2'
+            laravel: 11
+          - php: '8.3'
+            laravel: 11
+          - php: '8.4'
+            laravel: 11
+
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: 'nge'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Create a new laravel application
+        run: composer create-project laravel/laravel app "${{ matrix.laravel }}.x" --remove-vcs --no-interaction --prefer-dist
+
+      - name: Link Nge Repository
+        run: |
+          composer config minimum-stability dev
+          composer config repositories.nge path ../nge
+          composer require laravel/nge:* --dev -W
+        working-directory: app
+
+      - name: Install Nge into App
+        run: |
+          php artisan nge:install --php=${{ matrix.php }} --no-interaction
+          php artisan nge:publish --no-interaction
+        working-directory: app
+
+      - name: Remove Nge
+        run: composer remove laravel/nge --dev --no-interaction -W
+        working-directory: app
+
+      - name: Start Nge Container
+        run: ../nge/bin/nge up -d --wait
+        working-directory: app
+
+      - name: Run Migrations
+        run: ../nge/bin/nge artisan migrate --no-interaction
+        working-directory: app
+
+      - name: Run Tests in Nge Container
+        run: ../nge/bin/nge test
+        working-directory: app
+
+      - name: Stop Nge Container
+        run: ../nge/bin/nge down
+        working-directory: app
