@@ -51,7 +51,7 @@ jobs:
       - name: Link Nge Repository
         run: |
           composer config minimum-stability dev
-          composer config repositories.nge path ../nge
+          composer config repositories.nge path ../dentro-nge
           composer require dentro/nge:* --dev -W
         working-directory: app
 
@@ -65,17 +65,17 @@ jobs:
         working-directory: app
 
       - name: Start Nge Container
-        run: ../nge/bin/nge up -d --wait
+        run: ../dentro-nge/bin/nge up -d --wait
         working-directory: app
 
       - name: Run Migrations
-        run: ../nge/bin/nge artisan migrate --no-interaction
+        run: ../dentro-nge/bin/nge once artisan migrate --no-interaction
         working-directory: app
 
       - name: Run Tests in Nge Container
-        run: ../nge/bin/nge test
+        run: ../dentro-nge/bin/nge test
         working-directory: app
 
       - name: Stop Nge Container
-        run: ../nge/bin/nge down
+        run: ../dentro-nge/bin/nge down
         working-directory: app

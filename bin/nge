@@ -126,7 +126,7 @@ fi
 
 # Define environment variables...
 export APP_PORT=${APP_PORT:-80}
-export APP_SERVICE=${APP_SERVICE:-"laravel.nge"}
+export APP_SERVICE=${APP_SERVICE:-"core"}
 export DB_PORT=${DB_PORT:-3306}
 export NGE_USER=${NGE_USER:-$USER}
 export NGE_PUID=${NGE_PUID:-$UID}

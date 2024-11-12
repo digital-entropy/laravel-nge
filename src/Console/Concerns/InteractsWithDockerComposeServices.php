@@ -60,11 +60,11 @@ trait InteractsWithDockerComposeServices
             ? Yaml::parseFile($composePath)
             : Yaml::parse(file_get_contents(__DIR__ . '/../../../stubs/docker-compose.stub'));
 
-        // Adds the new services as dependencies of the laravel.nge service...
-        if (! array_key_exists('laravel.nge', $compose['services'])) {
-            $this->warn('Couldn\'t find the laravel.nge service. Make sure you add ['.implode(',', $services).'] to the depends_on config.');
+        // Adds the new services as dependencies of the core service...
+        if (! array_key_exists('core', $compose['services'])) {
+            $this->warn('Couldn\'t find the --core-- service. Make sure you add ['.implode(',', $services).'] to the depends_on config.');
         } else {
-            $compose['services']['laravel.nge']['depends_on'] = collect($compose['services']['laravel.nge']['depends_on'] ?? [])
+            $compose['services']['core']['depends_on'] = collect($compose['services']['core']['depends_on'] ?? [])
                 ->merge($services)
                 ->unique()
                 ->values()

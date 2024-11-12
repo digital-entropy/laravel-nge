@@ -1,5 +1,5 @@
 services:
-    laravel.nge:
+    core:
         hostname: ${NGE_HOSTNAME:-nge-hostname}
         build:
             context: ./vendor/dentro/nge/image
@@ -9,7 +9,7 @@ services:
                 - USER_CONTAINER=${NGE_USER:-enji}
                 - PUID=${NGE_PUID:-1000}
                 - PGID=${NGE_PGID:-1000}
-        image: app:{{PHP_VERSION}}
+        image: dentro/nge:{{PHP_VERSION}}
         user: ${NGE_USER:-enji}
         restart: unless-stopped
         ports:
@@ -23,12 +23,6 @@ services:
             - ./storage/app/psysh:/home/${NGE_USER}/.config/psysh
         networks:
             - intl
-        healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost" ]
-            interval: 10s
-            timeout: 3s
-            retries: 10
-            start_period: 10s
 
 networks:
     intl:
