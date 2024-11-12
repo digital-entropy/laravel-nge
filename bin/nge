@@ -378,5 +378,6 @@ fi
 if declare -f "$1" > /dev/null ; then
     "$@" # call function verbatim
 else
+    echo "Running ${YELLOW}docker compose${NC} .."
     compose $@ # if there's no function
 fi
