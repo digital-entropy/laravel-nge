@@ -51,7 +51,7 @@ jobs:
       - name: Link Nge Repository
         run: |
           composer config minimum-stability dev
-          composer config repositories.nge path ../dentro-nge
+          composer config repositories.nge '{"type": "path", "url": "../dentro-nge", "options": { "symlink": false }}'
           composer require dentro/nge:* --dev -W
         working-directory: app
 
