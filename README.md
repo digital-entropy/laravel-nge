@@ -26,7 +26,7 @@ Laravel Nge is inspired by and derived from [Laravel Sail](https://github.com/sh
 
 ### Run Container's Command
 
-You can rnu commands via container such as `artisan`, `composer`, `npm`, `yarn`, `expose` and many more. You can run `./vendor/bin/nge --help|-h` to learn more about the available commands.
+You can run commands via container such as `artisan`, `composer`, `npm`, `yarn`, `expose` and many more. You can run `./vendor/bin/nge --help|-h` to learn more about the available commands.
 
 **Examples**
 
