@@ -60,22 +60,18 @@ jobs:
           php artisan nge:install --php=${{ matrix.php }} --no-interaction
         working-directory: app
 
-      - name: Remove Nge
-        run: composer remove dentro/nge --dev --no-interaction -W
-        working-directory: app
-
       - name: Start Nge Container
-        run: ../dentro-nge/bin/nge up -d --wait
+        run: vendor/bin/nge up -d --wait
         working-directory: app
 
       - name: Run Migrations
-        run: ../dentro-nge/bin/nge once artisan migrate --no-interaction
+        run: vendor/bin/nge once artisan migrate --no-interaction
         working-directory: app
 
       - name: Run Tests in Nge Container
-        run: ../dentro-nge/bin/nge test
+        run: vendor/bin/nge test
         working-directory: app
 
       - name: Stop Nge Container
-        run: ../dentro-nge/bin/nge down
+        run: vendor/bin/nge down
         working-directory: app
