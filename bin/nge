@@ -132,7 +132,6 @@ export NGE_USER=${NGE_USER:-$USER}
 export NGE_PUID=${NGE_PUID:-$UID}
 export NGE_PGID=${NGE_PGID:-$(id -g)}
 
-export NGE_FILES=${NGE_FILES:-""}
 export NGE_EXPOSE_DASHBOARD=${NGE_EXPOSE_DASHBOARD:-4040}
 export NGE_EXPOSE_SERVER_HOST=${NGE_EXPOSE_SERVER_HOST:-"laravel-nge.site"}
 export NGE_EXPOSE_SERVER_PORT=${NGE_EXPOSE_SERVER_PORT:-8080}
@@ -160,28 +159,6 @@ function compose() {
     "${DOCKER_COMPOSE[@]}" $@
 }
 
-# Define Docker Compose command prefix...
-if docker compose &> /dev/null; then
-    DOCKER_COMPOSE=(docker compose)
-else
-    DOCKER_COMPOSE=(docker-compose)
-fi
-
-if [ -n "$NGE_FILES" ]; then
-    # Convert NGE_FILES to an array...
-    IFS=':' read -ra NGE_FILES <<< "$NGE_FILES"
-
-    for FILE in "${NGE_FILES[@]}"; do
-        if [ -f "$FILE" ]; then
-            DOCKER_COMPOSE+=(-f "$FILE")
-        else
-            echo "${BOLD}Unable to find Docker Compose file: '${FILE}'${NC}" >&2
-
-            exit 1
-        fi
-    done
-fi
-
 EXEC="yes"
 if [ -z "$NGE_SKIP_CHECKS" ]; then
     # Ensure that Docker is running...
@@ -206,6 +183,7 @@ fi
 # running APP_SERVICE with `compose run|exec`
 function app_crun() {
     if [ $ONCE == "no" ]; then
+        # run via new container
         if [ -z "$NGE_USER" ]; then
             compose exec -it --user=$NGE_USER $APP_SERVICE $@
         else
@@ -213,6 +191,7 @@ function app_crun() {
             compose exec -it $APP_SERVICE $@
         fi
     else
+        # run via existing container
         if [ -z "$NGE_USER" ]; then
             compose run --rm --user=$NGE_USER $APP_SERVICE $@
         else
@@ -322,15 +301,15 @@ function bash() {
 }
 
 function root-shell() {
-    rrun sh
+    app_rrun sh
 }
 
 function root-bash() {
-    rrun bash
+    app_rrun bash
 }
 
 function tinker() {
-    crun php artisan tinker
+    app_crun php artisan tinker
 }
 
 function expose() {
