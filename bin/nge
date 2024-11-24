@@ -207,17 +207,17 @@ fi
 function app_crun() {
     if [ $ONCE == "no" ]; then
         if [ -z "$NGE_USER" ]; then
-            compose exec -it --user=$NGE_USER $APP_SERVICE $@
-        else
             echo "${YELLOW}NGE_USER not set. Running with default user.${NC}" >&2
             compose exec -it $APP_SERVICE $@
+        else
+            compose exec -it --user=$NGE_USER $APP_SERVICE $@
         fi
     else
         if [ -z "$NGE_USER" ]; then
-            compose run --rm --user=$NGE_USER $APP_SERVICE $@
-        else
             echo "${YELLOW}NGE_USER not set. Running with default user.${NC}" >&2
             compose run --rm $APP_SERVICE $@
+        else
+            compose run --rm --user=$NGE_USER $APP_SERVICE $@
         fi
     fi
 }
