@@ -17,6 +17,12 @@ class NgeServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerCommands();
+
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../bin/nge' => $this->app->basePath('nge'),
+            ], ['nge', 'nge-bin']);
+        }
     }
 
     /**
