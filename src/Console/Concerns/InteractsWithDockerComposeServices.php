@@ -62,7 +62,7 @@ trait InteractsWithDockerComposeServices
 
         // Adds the new services as dependencies of the core service...
         if (! array_key_exists('core', $compose['services'])) {
-            $this->warn('Couldn\'t find the --core-- service. Make sure you add ['.implode(',', $services).'] to the depends_on config.');
+            $this->warn('Couldn\'t find the --core-- service. Make sure you add [' . implode(',', $services) . '] to the depends_on config.');
         } else {
             $compose['services']['core']['depends_on'] = collect($compose['services']['core']['depends_on'] ?? [])
                 ->merge($services)
@@ -111,9 +111,11 @@ trait InteractsWithDockerComposeServices
     {
         $environment = file_get_contents($this->laravel->basePath('.env'));
 
-        if (in_array('mysql', $services) ||
+        if (
+            in_array('mysql', $services) ||
             in_array('mariadb', $services) ||
-            in_array('pgsql', $services)) {
+            in_array('pgsql', $services)
+        ) {
             $defaults = [
                 '# DB_HOST=127.0.0.1',
                 '# DB_PORT=3306',
@@ -130,7 +132,7 @@ trait InteractsWithDockerComposeServices
         if (in_array('mysql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mysql', $environment);
             $environment = str_replace('DB_HOST=127.0.0.1', "DB_HOST=mysql", $environment);
-        }elseif (in_array('pgsql', $services)) {
+        } elseif (in_array('pgsql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=pgsql', $environment);
             $environment = str_replace('DB_HOST=127.0.0.1', "DB_HOST=pgsql", $environment);
             $environment = str_replace('DB_PORT=3306', "DB_PORT=5432", $environment);
@@ -207,7 +209,7 @@ trait InteractsWithDockerComposeServices
 
         if (count($services) > 0) {
             $this->runCommands([
-                './vendor/bin/nge pull '.implode(' ', $services),
+                './vendor/bin/nge pull ' . implode(' ', $services),
             ]);
         }
 
@@ -230,12 +232,12 @@ trait InteractsWithDockerComposeServices
             try {
                 $process->setTty(true);
             } catch (\RuntimeException $e) {
-                $this->output->writeln('  <bg=yellow;fg=black> WARN </> '.$e->getMessage().PHP_EOL);
+                $this->output->writeln('  <bg=yellow;fg=black> WARN </> ' . $e->getMessage() . PHP_EOL);
             }
         }
 
         return $process->run(function ($type, $line) {
-            $this->output->write('    '.$line);
+            $this->output->write('    ' . $line);
         });
     }
 }

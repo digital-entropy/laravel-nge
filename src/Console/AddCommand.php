@@ -30,16 +30,16 @@ class AddCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int|null
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $services = $this->gatherServicesInteractively();
 
         if ($invalidServices = array_diff($services, $this->services)) {
-            $this->components->error('Invalid services ['.implode(',', $invalidServices).'].');
+            $this->components->error('Invalid services [' . implode(',', $invalidServices) . '].');
 
-            return 1;
+            return;
         }
 
         $this->buildDockerCompose($services);

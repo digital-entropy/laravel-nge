@@ -3,9 +3,7 @@
 namespace Dentro\Nge\Console;
 
 use Illuminate\Console\Command;
-use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Process\Process;
 
 #[AsCommand(name: 'nge:install')]
 class InstallCommand extends Command
@@ -29,10 +27,8 @@ class InstallCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int|null
      */
-    public function handle()
+    public function handle(): void
     {
         if ($this->option('no-interaction')) {
             $services = $this->defaultServices;
@@ -41,9 +37,9 @@ class InstallCommand extends Command
         }
 
         if ($invalidServices = array_diff($services, $this->services)) {
-            $this->components->error('Invalid services ['.implode(',', $invalidServices).'].');
+            $this->components->error('Invalid services [' . implode(',', $invalidServices) . '].');
 
-            return 1;
+            return;
         }
 
         $this->buildDockerCompose($services);
@@ -57,9 +53,11 @@ class InstallCommand extends Command
 
         $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge up</>');
 
-        if (in_array('mysql', $services) ||
+        if (
+            in_array('mysql', $services) ||
             in_array('mariadb', $services) ||
-            in_array('pgsql', $services)) {
+            in_array('pgsql', $services)
+        ) {
             $this->components->warn('A database service was installed. Run "artisan migrate" to prepare your database:');
 
             $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge artisan migrate</>');
