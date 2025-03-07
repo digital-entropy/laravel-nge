@@ -375,6 +375,13 @@ if [ $1 == "app_crun" ] || [ $1 == "app_rrun" ] ; then
     display_help
 fi
 
+# check if docker-compose.yml exists
+if [ ! -f "docker-compose.yml" ]; then
+    echo "docker-compose.yml not found. Have you run ${YELLOW}artisan nge:install${NC}?" >&2
+
+    exit 1
+fi
+
 if declare -f "$1" > /dev/null ; then
     "$@" # call function verbatim
 else
