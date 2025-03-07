@@ -15,9 +15,9 @@
     ],
     "require": {
         "php": "^8.2",
-        "illuminate/console": "^11.0",
-        "illuminate/contracts": "^11.0",
-        "illuminate/support": "^11.0",
+        "illuminate/console": "^12.0",
+        "illuminate/contracts": "^12.0",
+        "illuminate/support": "^12.0",
         "symfony/console": "^7.0",
         "symfony/yaml": "^7.0"
     },
