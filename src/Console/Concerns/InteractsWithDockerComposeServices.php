@@ -164,10 +164,11 @@ trait InteractsWithDockerComposeServices
         if (in_array('mysql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mysql', $environment);
             $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=mysql", $environment);
+            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=3306", $environment);
         } elseif (in_array('pgsql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=pgsql', $environment);
             $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=pgsql", $environment);
-            $environment = str_replace('DB_PORT=3306', "DB_PORT=5432", $environment);
+            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=5432", $environment);
         } elseif (in_array('mariadb', $services)) {
             if ($this->laravel->config->has('database.connections.mariadb')) {
                 $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mariadb', $environment);
@@ -177,6 +178,7 @@ trait InteractsWithDockerComposeServices
             }
 
             $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=mariadb", $environment);
+            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=3306", $environment);
         }
 
         $randomPassword = str()->random(16);

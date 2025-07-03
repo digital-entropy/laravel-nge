@@ -37,20 +37,20 @@ class InstallCommand extends Command
         }
 
         if ($invalidServices = array_diff($services, $this->services)) {
-            $this->components->error('Invalid services [' . implode(',', $invalidServices) . '].');
+            $this->error('Invalid services [' . implode(',', $invalidServices) . '].');
 
             return;
         }
 
         $this->buildDockerCompose($services);
-        $this->components->success('Docker compose file created!');
+        $this->info('Docker compose file created!');
 
         $this->output->writeln('');
         if ($this->confirm('Do you want to auto-replace environment variables in the .env file? (we\'ll make .env.backup)', true) || $this->option('no-interaction')) {
             $this->replaceEnvVariables($services);
             $this->configurePhpUnit();
 
-            $this->components->success('Environment and PHPUnit (if any) variables has been set!');
+            $this->info('Environment and PHPUnit (if any) variables has been set!');
         } else {
             $this->warn('You need to manually auto-replace the environment variables in your .env file.');
         }
@@ -60,7 +60,7 @@ class InstallCommand extends Command
             $this->prepareInstallation($services);
         }
 
-        $this->components->success('Docker scaffolding installed successfully. You may run your Docker containers using Nge\'s "up" command.');
+        $this->info('Docker scaffolding installed successfully. You may run your Docker containers using Nge\'s "up" command.');
 
         $this->output->writeln('');
         $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge up -d</>');
@@ -70,7 +70,7 @@ class InstallCommand extends Command
             in_array('mariadb', $services) ||
             in_array('pgsql', $services)
         ) {
-            $this->components->warn('A database service was installed. Run "artisan migrate" to prepare your database:');
+            $this->warn('A database service was installed. Run "artisan migrate" to prepare your database:');
 
             $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge once artisan migrate</>');
         }
