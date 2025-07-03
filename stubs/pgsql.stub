@@ -8,7 +8,7 @@ pgsql:
         POSTGRES_USER: '${DB_USERNAME}'
         POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
     volumes:
-        - 'nge-pgsql:/var/lib/postgresql/data'
+        - 'pgsql-store:/var/lib/postgresql/data'
         - './vendor/dentro/nge/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
     networks:
         - intl

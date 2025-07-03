@@ -1,6 +1,22 @@
+x-core-cli: &core-cli
+    hostname: '${NGE_HOSTNAME:-nge-hostname}'
+    image: dentro/nge:latest
+    user: '${NGE_USER:-enji}'
+    restart: unless-stopped
+    environment:
+        DOCKER_ENV: '${APP_ENV}'
+        DOCKER_WORKERS: '${DOCKER_WORKERS:-auto}'
+    networks:
+        - intl
+    working_dir: /var/www
+    logging:
+        options:
+            max-size: "10m"
+            max-file: "3"
+
 services:
     core:
-        hostname: ${NGE_HOSTNAME:-nge-hostname}
+        <<: *core-cli
         build:
             context: ./vendor/dentro/nge/image
             dockerfile: Dockerfile
@@ -9,20 +25,22 @@ services:
                 - USER_CONTAINER=${NGE_USER:-enji}
                 - PUID=${NGE_PUID:-1000}
                 - PGID=${NGE_PGID:-1000}
-        image: dentro/nge:{{PHP_VERSION}}
-        user: ${NGE_USER:-enji}
-        restart: unless-stopped
         ports:
             - '${APP_PORT:-80}:80'
             - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-        environment:
-            DOCKER_ENV: ${APP_ENV}
-            DOCKER_WORKERS: ${DOCKER_WORKERS:-auto}
         volumes:
             - '.:/var/www'
-            - ./storage/app/psysh:/home/${NGE_USER}/.config/psysh
-        networks:
-            - intl
+            - ./storage/app/psysh:/home/${NGE_USER:-enji}/.config/psysh
+    queue:
+        <<: *core-cli
+        command: [ "/usr/bin/php", "/var/www/artisan", "queue:work" ]
+        volumes:
+            - ./:/var/www
+    scheduler:
+        <<: *core-cli
+        command: [ "/usr/bin/php", "/var/www/artisan", "schedule:work" ]
+        volumes:
+            - ./:/var/www
 
 networks:
     intl:

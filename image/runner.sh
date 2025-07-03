@@ -16,7 +16,7 @@ echo "run on '$DOCKER_ENV' environment!"
 echo "run with '$DOCKER_WORKERS' workers!"
 
 # Check if `octane` command installed`
-if [ php artisan | grep "octane" &> /dev/null ]; then
+if php artisan | grep "octane" &> /dev/null; then
     if [ $DOCKER_ENV == "production" ]; then
         php artisan octane:start --host=0.0.0.0 --port=80 --workers=$DOCKER_WORKERS --task-workers=$DOCKER_WORKERS
     else

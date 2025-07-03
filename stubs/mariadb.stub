@@ -10,7 +10,7 @@ mariadb:
         MYSQL_PASSWORD: '${DB_PASSWORD}'
         MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
     volumes:
-        - 'nge-mariadb:/var/lib/mysql'
+        - 'mariadb-store:/var/lib/mysql'
         - './vendor/dentro/nge/database/mariadb/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
     networks:
         - intl

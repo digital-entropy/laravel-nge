@@ -3,7 +3,7 @@ redis:
     ports:
         - '${FORWARD_REDIS_PORT:-6379}:6379'
     volumes:
-        - 'nge-redis:/data'
+        - 'redis-store:/data'
     networks:
         - intl
     healthcheck:

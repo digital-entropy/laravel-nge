@@ -5,7 +5,6 @@ namespace Dentro\Nge;
 use Illuminate\Support\ServiceProvider;
 use Dentro\Nge\Console\AddCommand;
 use Dentro\Nge\Console\InstallCommand;
-use Dentro\Nge\Console\PublishCommand;
 
 class NgeServiceProvider extends ServiceProvider
 {

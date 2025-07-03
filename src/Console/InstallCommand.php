@@ -43,15 +43,27 @@ class InstallCommand extends Command
         }
 
         $this->buildDockerCompose($services);
-        $this->replaceEnvVariables($services);
-        $this->configurePhpUnit();
-
-        $this->prepareInstallation($services);
+        $this->components->success('Docker compose file created!');
 
         $this->output->writeln('');
-        $this->components->info('Nge scaffolding installed successfully. You may run your Docker containers using Nge\'s "up" command.');
+        if ($this->confirm('Do you want to auto-replace environment variables in the .env file? (we\'ll make .env.backup)', true) || $this->option('no-interaction')) {
+            $this->replaceEnvVariables($services);
+            $this->configurePhpUnit();
 
-        $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge up</>');
+            $this->components->success('Environment and PHPUnit (if any) variables has been set!');
+        } else {
+            $this->warn('You need to manually auto-replace the environment variables in your .env file.');
+        }
+
+        $this->output->writeln('');
+        if ($this->confirm('Continue to pull and build compose file?', true) || $this->option('no-interaction')) {
+            $this->prepareInstallation($services);
+        }
+
+        $this->components->success('Docker scaffolding installed successfully. You may run your Docker containers using Nge\'s "up" command.');
+
+        $this->output->writeln('');
+        $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge up -d</>');
 
         if (
             in_array('mysql', $services) ||
@@ -60,7 +72,7 @@ class InstallCommand extends Command
         ) {
             $this->components->warn('A database service was installed. Run "artisan migrate" to prepare your database:');
 
-            $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge artisan migrate</>');
+            $this->output->writeln('<fg=gray>➜</> <options=bold>./vendor/bin/nge once artisan migrate</>');
         }
 
         $this->output->writeln('');

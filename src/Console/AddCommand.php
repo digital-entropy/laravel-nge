@@ -25,7 +25,7 @@ class AddCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Add a service to an existing Nge installation';
+    protected $description = '(alpha) Add a service to an existing Nge installation';
 
     /**
      * Execute the console command.
