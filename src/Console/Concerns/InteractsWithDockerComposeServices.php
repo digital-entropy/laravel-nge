@@ -2,7 +2,6 @@
 
 namespace Dentro\Nge\Console\Concerns;
 
-use Illuminate\Support\Str;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Yaml\Yaml;
 
@@ -50,7 +49,6 @@ trait InteractsWithDockerComposeServices
     /**
      * Build the Docker Compose file.
      *
-     * @param array $services
      * @return void
      */
     protected function buildDockerCompose(array $services)
@@ -59,7 +57,7 @@ trait InteractsWithDockerComposeServices
         $appUser = get_current_user();
         $composePath = base_path('docker-compose.yml');
 
-        $composeContent = file_get_contents(__DIR__ . '/../../../stubs/docker-compose.stub');
+        $composeContent = file_get_contents(__DIR__.'/../../../stubs/docker-compose.stub');
         $composeContent = str_replace('NGE_HOSTNAME:-nge-hostname', "NGE_HOSTNAME:-$appName-hostname", $composeContent);
         $composeContent = str_replace('dentro/nge:latest', "$appName/app:latest", $composeContent);
         $composeContent = str_replace('NGE_USER:-enji', "NGE_USER:-$appUser", $composeContent);
@@ -77,8 +75,8 @@ trait InteractsWithDockerComposeServices
         }
 
         // Adds the new services as dependencies of the core service...
-        if (!array_key_exists('core', $compose['services'])) {
-            $this->warn('Couldn\'t find the --core-- service. Make sure you add [' . implode(',', $services) . '] in depends_on attribute.');
+        if (! array_key_exists('core', $compose['services'])) {
+            $this->warn('Couldn\'t find the --core-- service. Make sure you add ['.implode(',', $services).'] in depends_on attribute.');
         } else {
             $dependsOnServices = collect(data_get($compose, 'services.core.depends_on', []))
                 ->merge($services)
@@ -92,9 +90,9 @@ trait InteractsWithDockerComposeServices
         // Add the services to the docker-compose.yml...
         collect($services)
             ->filter(function ($service) use ($compose) {
-                return !array_key_exists($service, data_get($compose, 'services', []));
+                return ! array_key_exists($service, data_get($compose, 'services', []));
             })->each(function ($service) use (&$compose) {
-                $serviceConfig = Yaml::parseFile(__DIR__ . "/../../../stubs/$service.stub");
+                $serviceConfig = Yaml::parseFile(__DIR__."/../../../stubs/$service.stub");
                 data_set(
                     $compose,
                     "services.$service",
@@ -107,7 +105,7 @@ trait InteractsWithDockerComposeServices
             ->filter(function ($service) {
                 return in_array($service, ['mysql', 'pgsql', 'mariadb', 'redis']);
             })->filter(function ($service) use ($compose) {
-                return !array_key_exists($service, data_get($compose, 'volumes', []));
+                return ! array_key_exists($service, data_get($compose, 'volumes', []));
             })->each(function ($service) use (&$compose) {
                 data_set($compose, "volumes.$service-store", ['driver' => 'local']);
             });
@@ -127,7 +125,6 @@ trait InteractsWithDockerComposeServices
     /**
      * Replace the Host environment variables in the app's .env file.
      *
-     * @param array $services
      * @return void
      */
     protected function replaceEnvVariables(array $services)
@@ -139,7 +136,7 @@ trait InteractsWithDockerComposeServices
             exit(0);
         }
 
-        if (!file_exists($this->laravel->basePath('.env.backup'))) {
+        if (! file_exists($this->laravel->basePath('.env.backup'))) {
             copy($this->laravel->basePath('.env'), $this->laravel->basePath('.env.backup'));
         }
 
@@ -163,12 +160,12 @@ trait InteractsWithDockerComposeServices
 
         if (in_array('mysql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mysql', $environment);
-            $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=mysql", $environment);
-            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=3306", $environment);
+            $environment = preg_replace('/DB_HOST=.*/', 'DB_HOST=mysql', $environment);
+            $environment = preg_replace('/DB_PORT=.*/', 'DB_PORT=3306', $environment);
         } elseif (in_array('pgsql', $services)) {
             $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=pgsql', $environment);
-            $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=pgsql", $environment);
-            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=5432", $environment);
+            $environment = preg_replace('/DB_HOST=.*/', 'DB_HOST=pgsql', $environment);
+            $environment = preg_replace('/DB_PORT=.*/', 'DB_PORT=5432', $environment);
         } elseif (in_array('mariadb', $services)) {
             if ($this->laravel->config->has('database.connections.mariadb')) {
                 $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mariadb', $environment);
@@ -177,13 +174,13 @@ trait InteractsWithDockerComposeServices
                 $environment = preg_replace('/DB_CONNECTION=.*/', 'DB_CONNECTION=mysql', $environment);
             }
 
-            $environment = preg_replace('/DB_HOST=.*/', "DB_HOST=mariadb", $environment);
-            $environment = preg_replace('/DB_PORT=.*/', "DB_PORT=3306", $environment);
+            $environment = preg_replace('/DB_HOST=.*/', 'DB_HOST=mariadb', $environment);
+            $environment = preg_replace('/DB_PORT=.*/', 'DB_PORT=3306', $environment);
         }
 
         $randomPassword = str()->random(16);
-        $environment = str_replace('DB_USERNAME=root', "DB_USERNAME=app", $environment);
-        $environment = preg_replace("/DB_PASSWORD=(.*)/", "DB_PASSWORD=$randomPassword", $environment);
+        $environment = str_replace('DB_USERNAME=root', 'DB_USERNAME=app', $environment);
+        $environment = preg_replace('/DB_PASSWORD=(.*)/', "DB_PASSWORD=$randomPassword", $environment);
 
         if (in_array('redis', $services)) {
             $environment = preg_replace('/REDIS_HOST=.*/', 'REDIS_HOST=redis', $environment);
@@ -194,20 +191,20 @@ trait InteractsWithDockerComposeServices
             $randomAppKey = str()->random(32);
             $randomAppSecret = str()->random(32);
 
-            $environment = preg_replace("/^BROADCAST_DRIVER=(.*)/m", "BROADCAST_DRIVER=pusher", $environment);
-            $environment = preg_replace("/^PUSHER_APP_ID=(.*)/m", "PUSHER_APP_ID=$randomAppId", $environment);
-            $environment = preg_replace("/^PUSHER_APP_KEY=(.*)/m", "PUSHER_APP_KEY=$randomAppKey", $environment);
-            $environment = preg_replace("/^PUSHER_APP_SECRET=(.*)/m", "PUSHER_APP_SECRET=$randomAppSecret", $environment);
-            $environment = preg_replace("/^PUSHER_HOST=(.*)/m", "PUSHER_HOST=soketi", $environment);
-            $environment = preg_replace("/^PUSHER_PORT=(.*)/m", "PUSHER_PORT=6001", $environment);
-            $environment = preg_replace("/^PUSHER_SCHEME=(.*)/m", "PUSHER_SCHEME=http", $environment);
-            $environment = preg_replace("/^VITE_PUSHER_HOST=(.*)/m", "VITE_PUSHER_HOST=localhost", $environment);
+            $environment = preg_replace('/^BROADCAST_DRIVER=(.*)/m', 'BROADCAST_DRIVER=pusher', $environment);
+            $environment = preg_replace('/^PUSHER_APP_ID=(.*)/m', "PUSHER_APP_ID=$randomAppId", $environment);
+            $environment = preg_replace('/^PUSHER_APP_KEY=(.*)/m', "PUSHER_APP_KEY=$randomAppKey", $environment);
+            $environment = preg_replace('/^PUSHER_APP_SECRET=(.*)/m', "PUSHER_APP_SECRET=$randomAppSecret", $environment);
+            $environment = preg_replace('/^PUSHER_HOST=(.*)/m', 'PUSHER_HOST=soketi', $environment);
+            $environment = preg_replace('/^PUSHER_PORT=(.*)/m', 'PUSHER_PORT=6001', $environment);
+            $environment = preg_replace('/^PUSHER_SCHEME=(.*)/m', 'PUSHER_SCHEME=http', $environment);
+            $environment = preg_replace('/^VITE_PUSHER_HOST=(.*)/m', 'VITE_PUSHER_HOST=localhost', $environment);
         }
 
         if (in_array('mailpit', $services)) {
-            $environment = preg_replace("/^MAIL_MAILER=(.*)/m", "MAIL_MAILER=smtp", $environment);
-            $environment = preg_replace("/^MAIL_HOST=(.*)/m", "MAIL_HOST=mailpit", $environment);
-            $environment = preg_replace("/^MAIL_PORT=(.*)/m", "MAIL_PORT=1025", $environment);
+            $environment = preg_replace('/^MAIL_MAILER=(.*)/m', 'MAIL_MAILER=smtp', $environment);
+            $environment = preg_replace('/^MAIL_HOST=(.*)/m', 'MAIL_HOST=mailpit', $environment);
+            $environment = preg_replace('/^MAIL_PORT=(.*)/m', 'MAIL_PORT=1025', $environment);
         }
 
         file_put_contents($this->laravel->basePath('.env'), $environment);
@@ -220,10 +217,10 @@ trait InteractsWithDockerComposeServices
      */
     protected function configurePhpUnit()
     {
-        if (!file_exists($path = $this->laravel->basePath('phpunit.xml'))) {
+        if (! file_exists($path = $this->laravel->basePath('phpunit.xml'))) {
             $path = $this->laravel->basePath('phpunit.xml.dist');
 
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 return;
             }
         }
@@ -239,7 +236,7 @@ trait InteractsWithDockerComposeServices
     /**
      * Prepare the installation by pulling and building any necessary images.
      *
-     * @param array $services
+     * @param  array  $services
      * @return void
      */
     protected function prepareInstallation($services)
@@ -251,7 +248,7 @@ trait InteractsWithDockerComposeServices
 
         if (count($services) > 0) {
             $this->runCommands([
-                './vendor/bin/nge pull ' . implode(' ', $services),
+                './vendor/bin/nge pull '.implode(' ', $services),
             ]);
         }
 
@@ -263,7 +260,7 @@ trait InteractsWithDockerComposeServices
     /**
      * Run the given commands.
      *
-     * @param array $commands
+     * @param  array  $commands
      * @return int
      */
     protected function runCommands($commands)
@@ -274,12 +271,12 @@ trait InteractsWithDockerComposeServices
             try {
                 $process->setTty(true);
             } catch (\RuntimeException $e) {
-                $this->output->writeln('  <bg=yellow;fg=black> WARN </> ' . $e->getMessage() . PHP_EOL);
+                $this->output->writeln('  <bg=yellow;fg=black> WARN </> '.$e->getMessage().PHP_EOL);
             }
         }
 
         return $process->run(function ($type, $line) {
-            $this->output->write('    ' . $line);
+            $this->output->write('    '.$line);
         });
     }
 }

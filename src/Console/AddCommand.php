@@ -2,8 +2,8 @@
 
 namespace Dentro\Nge\Console;
 
-use Illuminate\Console\Command;
 use Dentro\Nge\Console\Concerns\InteractsWithDockerComposeServices;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(name: 'nge:add')]
@@ -29,15 +29,13 @@ class AddCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle(): void
     {
         $services = $this->gatherServicesInteractively();
 
         if ($invalidServices = array_diff($services, $this->services)) {
-            $this->components->error('Invalid services [' . implode(',', $invalidServices) . '].');
+            $this->components->error('Invalid services ['.implode(',', $invalidServices).'].');
 
             return;
         }

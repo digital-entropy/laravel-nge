@@ -2,9 +2,9 @@
 
 namespace Dentro\Nge;
 
-use Illuminate\Support\ServiceProvider;
 use Dentro\Nge\Console\AddCommand;
 use Dentro\Nge\Console\InstallCommand;
+use Illuminate\Support\ServiceProvider;
 
 class NgeServiceProvider extends ServiceProvider
 {
@@ -19,7 +19,7 @@ class NgeServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../bin/nge' => $this->app->basePath('nge'),
+                __DIR__.'/../bin/nge' => $this->app->basePath('nge'),
             ], ['nge', 'nge-bin']);
         }
     }
